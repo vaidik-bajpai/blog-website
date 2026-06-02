@@ -108,6 +108,26 @@ export default function FloatingNavbarClient({ techLatest = [], communityLatest 
   const [communityState, setCommunityState] = useState<any[]>(communityLatest);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  const openTabletDropdown = (
+    event: React.MouseEvent<HTMLElement>,
+    dropdown: 'tech' | 'community' | 'resources'
+  ) => {
+    const isTabletLikeNav =
+      window.innerWidth <= 1024 ||
+      window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+    if (!isTabletLikeNav) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    setShowTechDropdown(dropdown === 'tech');
+    setShowCommunityDropdown(dropdown === 'community');
+    setResourcesOpen(dropdown === 'resources');
+    setHoveredNav(dropdown);
+    setLinkHoverTech(dropdown === 'tech');
+    setLinkHoverCommunity(dropdown === 'community');
+  };
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const isMac = navigator.platform.toUpperCase().includes("MAC");
@@ -223,6 +243,9 @@ export default function FloatingNavbarClient({ techLatest = [], communityLatest 
           >
             <Link
               href="/technology"
+              aria-haspopup="menu"
+              aria-expanded={showTechDropdown}
+              onClick={(event) => openTabletDropdown(event, 'tech')}
               onMouseEnter={() => { setHoveredNav('tech'); setLinkHoverTech(true); }}
               onMouseLeave={() => { setLinkHoverTech(false); setHoveredNav(null); }}
               className={`${(showTechDropdown || showCommunityDropdown || resourcesOpen) && !showTechDropdown ? 'text-black/50' : 'text-foreground'} transition-colors text-[15px] font-medium py-2 px-1 inline-flex items-center gap-1.5 align-middle ${linkHoverTech ? 'underline underline-offset-2 decoration-1 decoration-neutral-400' : ''}`}
@@ -293,6 +316,9 @@ export default function FloatingNavbarClient({ techLatest = [], communityLatest 
           >
             <Link
               href="/community"
+              aria-haspopup="menu"
+              aria-expanded={showCommunityDropdown}
+              onClick={(event) => openTabletDropdown(event, 'community')}
               onMouseEnter={() => { setHoveredNav('community'); setLinkHoverCommunity(true); }}
               onMouseLeave={() => { setLinkHoverCommunity(false); setHoveredNav(null); }}
               className={`${(showTechDropdown || showCommunityDropdown || resourcesOpen) && !showCommunityDropdown ? 'text-black/50' : 'text-foreground'} transition-colors text-[15px] font-medium py-2 px-1 inline-flex items-center gap-1.5 align-middle ${linkHoverCommunity ? 'underline underline-offset-2 decoration-1 decoration-neutral-400' : ''}`}
@@ -362,6 +388,9 @@ export default function FloatingNavbarClient({ techLatest = [], communityLatest 
             onMouseLeave={() => { setResourcesOpen(false); setHoveredNav(null); }}
           >
             <button
+              aria-haspopup="menu"
+              aria-expanded={resourcesOpen}
+              onClick={(event) => openTabletDropdown(event, 'resources')}
               onMouseEnter={() => { setHoveredNav('resources'); }}
               onMouseLeave={() => { if (!resourcesOpen) { setHoveredNav(null); } }}
               className={`${(showTechDropdown || showCommunityDropdown || resourcesOpen) && !resourcesOpen ? 'text-black/50' : 'text-foreground'} transition-colors text-[15px] font-medium py-2 px-1 inline-flex items-center gap-1.5 align-middle`}
